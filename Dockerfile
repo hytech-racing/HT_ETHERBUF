@@ -21,8 +21,7 @@ RUN python3 genlib.py
 
 # Copy the output files
 RUN mkdir /out/
+VOLUME /out/
 RUN cp /workdir/etherbuf.h /out/
 RUN cp /workdir/etherbuf.pb.h /out/
 RUN cp /workdir/etherbuf.pb.c /out/
-
-VOLUME /out/
