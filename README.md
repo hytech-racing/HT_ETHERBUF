@@ -1,0 +1,1 @@
+Etherbuf is a SerDes library built on nanopb. Messages defined in `etherbuf.proto` are automatically incorporated into the C++ library upon regeneration.
