@@ -19,7 +19,10 @@ jobs:
       - name: Run docker container
         run: |
           mkdir -p output
-          docker run -v output:/out etherbuf
+          docker run --name etherbuf etherbuf
+          docker cp etherbuf:/workdir/etherbuf.h output
+          docker cp etherbuf:/workdir/etherbuf.pb.h output
+          docker cp etherbuf:/workdir/etherbuf.pb.c output
       - name: Archive artifacts
         run: |
           touch output/library.json
