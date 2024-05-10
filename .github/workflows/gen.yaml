@@ -1,0 +1,31 @@
+name: Generate and Release
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-lib:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout latest master
+        uses: actions/checkout@v4
+        with:
+          repository: hytech-racing/HT_ETHERBUF
+          ref: refs/heads/master
+      - name: Build docker image
+        run: docker build -t etherbuf .
+      - name: Run docker container
+        run: docker run -v ${{ github.workspace }}/output:/out etherbuf
+      - name: Archive artifacts
+        run: |
+          echo -e "{\n\"name\": \"ht_etherbuf_lib\",\n\"version\": \"1.${{ github.run_number }}\"\n}" >> ht_etherbuf_lib/library.json
+          tar -czvf ht_etherbuf_lib.tar.gz output
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.run_number }}
+          files: |
+            ht_etherbuf_lib.tar.gz
+      
