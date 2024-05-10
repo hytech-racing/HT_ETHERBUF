@@ -18,16 +18,16 @@ jobs:
         run: docker build -t etherbuf .
       - name: Run docker container
         run: |
-          mkdir -p output
+          mkdir -p ht_etherbuf_lib
           docker run --name etherbuf etherbuf
-          docker cp etherbuf:/workdir/etherbuf.h output
-          docker cp etherbuf:/workdir/etherbuf.pb.h output
-          docker cp etherbuf:/workdir/etherbuf.pb.c output
+          docker cp etherbuf:/workdir/etherbuf.h ht_etherbuf_lib
+          docker cp etherbuf:/workdir/etherbuf.pb.h ht_etherbuf_lib
+          docker cp etherbuf:/workdir/etherbuf.pb.c ht_etherbuf_lib
       - name: Archive artifacts
         run: |
-          touch output/library.json
-          echo -e "{\n\"name\": \"ht_etherbuf_lib\",\n\"version\": \"1.${{ github.run_number }}\"\n}" >> output/library.json
-          tar -czvf ht_etherbuf_lib.tar.gz output
+          touch ht_etherbuf_lib/library.json
+          echo -e "{\n\"name\": \"ht_etherbuf_lib\",\n\"version\": \"1.${{ github.run_number }}\"\n}" >> ht_etherbuf_lib/library.json
+          tar -czvf ht_etherbuf_lib.tar.gz ht_etherbuf_lib
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
