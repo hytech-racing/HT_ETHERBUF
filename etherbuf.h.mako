@@ -17,7 +17,7 @@ private:
 public:
     /// @brief Unpacks Etherbuf messages and calls the handler for the message type.
     /// @param messageBytes Pointer to raw bytes of an Etherbuf message
-    /// @param numBytes Size of the Etherbug message in bytes
+    /// @param numBytes Size of the Etherbuf message in bytes
     /// @return Returns true if a handler for the received message was found and called. False otherwise.
     bool handleIncomingMessage(char* messageBytes, int numBytes)
     {
@@ -25,23 +25,27 @@ public:
             return false;
         if (messageHandlers[messageBytes[0]] == 0)
             return false;
-% for i in range(len(messages) - 1):
-        if (messageBytes[0] == static_cast<int>(EtherbufMessages_E::${messages[i]}))
+        switch (messageBytes[0])
         {
-            if (messageHandlers[static_cast<int>(EtherbufMessages_E::${messages[i]})] != 0)
-            {
-                HT_Etherbuf_${messages[i]} unpackTarget;
-                pb_istream_t stream = pb_istream_from_buffer((const pb_byte_t*)&messageBytes[1], numBytes - 1);
-                bool success = pb_decode(&stream, HT_Etherbuf_${messages[i]}_fields, &unpackTarget);
+% for i in range(len(messages) - 1):
+            case static_cast<int>(EtherbufMessages_E::${messages[i]}):
+                if (messageHandlers[static_cast<int>(EtherbufMessages_E::${messages[i]})] != 0)
+                {
+                    HT_Etherbuf_${messages[i]} unpackTarget;
+                    pb_istream_t stream = pb_istream_from_buffer((const pb_byte_t*)&messageBytes[1], numBytes - 1);
+                    bool success = pb_decode(&stream, HT_Etherbuf_${messages[i]}_fields, &unpackTarget);
 
-                if (success == false)
-                    return false;
+                    if (success == false)
+                        return false;
 
-                ((void(*)(HT_Etherbuf_${messages[i]}*))messageHandlers[static_cast<int>(EtherbufMessages_E::${messages[i]})])(&unpackTarget);
-                return true;
-            }
-        }
+                    ((void(*)(HT_Etherbuf_${messages[i]}*))messageHandlers[static_cast<int>(EtherbufMessages_E::${messages[i]})])(&unpackTarget);
+                    return true;
+                }
+                break;
 % endfor
+            default:
+                break;
+        }
         return false;
     }
     /// @brief Packs a message into a buffer
@@ -55,12 +59,11 @@ public:
         messageBytes[0] = static_cast<char>(EtherbufMessages_E::${messages[i]});
         pb_ostream_t stream = pb_ostream_from_buffer((pb_byte_t*)&messageBytes[1], numBytes - 1);
         bool success = pb_encode(&stream, HT_Etherbuf_${messages[i]}_fields, &packTarget);
-        size_t sizeOfStream = 0;
-        success &= pb_get_encoded_size(&sizeOfStream, HT_Etherbuf_${messages[i]}_fields, &packTarget);
+        success &= (stream.bytes_written != 0);
 
         if (success == false)
             return -1;
-        return sizeOfStream + 1;
+        return stream.bytes_written + 1;
     }
 % endfor
     // Handlers are passed a pointer to an unpacked protobuf object
