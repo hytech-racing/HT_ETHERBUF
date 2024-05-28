@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
 RUN git clone https://github.com/nanopb/nanopb.git /workdir/nanopb/
 
 # Copy down the necessary files
-COPY genlib.py etherbuf.proto etherbuf.h.mako /workdir/
+COPY genlib.py etherbuf.proto.mako etherbuf.h.mako /workdir/
 
 WORKDIR /workdir/
 
