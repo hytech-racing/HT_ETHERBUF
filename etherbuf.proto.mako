@@ -1,9 +1,9 @@
 syntax = "proto3";
 import "nanopb.proto";
 
-package HT_Etherbuf;
+package ${proto_prefix};
 
-message CANWrapper {
+message can_tunnel {
     message CANMessage{
         int32 id = 1;
         bytes data = 2 [(nanopb).max_size = 8, (nanopb).fixed_length = true];

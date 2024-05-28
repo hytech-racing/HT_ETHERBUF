@@ -2,7 +2,20 @@ import subprocess
 import re
 from mako.template import Template
 
+PROTO_PREFIX = "HTE"
+C_PREFIX = PROTO_PREFIX + "_"
+
 if __name__ == "__main__":
+    # render the .proto
+    render = ""
+    with open("etherbuf.proto.mako", "r") as file:
+        template = Template(file.read())
+        render = template.render(
+            proto_prefix = PROTO_PREFIX
+        )
+    with open("etherbuf.proto", "w") as file:
+        file.write(render)
+
     # generate etherbuf
     subprocess.run(
         [
@@ -26,7 +39,8 @@ if __name__ == "__main__":
     with open("etherbuf.h.mako", "r") as file:
         template = Template(file.read())
         render = template.render(
-            messages = messages
+            messages = messages,
+            c_prefix = C_PREFIX
         )
 
     with open("etherbuf.h", "w") as file:

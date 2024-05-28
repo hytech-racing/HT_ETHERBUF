@@ -31,14 +31,14 @@ public:
             case static_cast<int>(EtherbufMessages_E::${messages[i]}):
                 if (messageHandlers[static_cast<int>(EtherbufMessages_E::${messages[i]})] != 0)
                 {
-                    HT_Etherbuf_${messages[i]} unpackTarget;
+                    ${c_prefix}${messages[i]} unpackTarget;
                     pb_istream_t stream = pb_istream_from_buffer((const pb_byte_t*)&messageBytes[1], numBytes - 1);
-                    bool success = pb_decode(&stream, HT_Etherbuf_${messages[i]}_fields, &unpackTarget);
+                    bool success = pb_decode(&stream, ${c_prefix}${messages[i]}_fields, &unpackTarget);
 
                     if (success == false)
                         return false;
 
-                    ((void(*)(HT_Etherbuf_${messages[i]}*))messageHandlers[static_cast<int>(EtherbufMessages_E::${messages[i]})])(&unpackTarget);
+                    ((void(*)(${c_prefix}${messages[i]}*))messageHandlers[static_cast<int>(EtherbufMessages_E::${messages[i]})])(&unpackTarget);
                     return true;
                 }
                 break;
@@ -54,11 +54,11 @@ public:
     /// @param packTarget PB struct representing the message to be packed
     /// @return -1 on failure to pack. Otherwise, the number of bytes in the buffer which were used.
 % for i in range(len(messages) - 1):
-    int toEtherbuf_${messages[i]}(char* messageBytes, int numBytes, HT_Etherbuf_${messages[i]} packTarget)
+    int toEtherbuf_${messages[i]}(char* messageBytes, int numBytes, ${c_prefix}${messages[i]} packTarget)
     {
         messageBytes[0] = static_cast<char>(EtherbufMessages_E::${messages[i]});
         pb_ostream_t stream = pb_ostream_from_buffer((pb_byte_t*)&messageBytes[1], numBytes - 1);
-        bool success = pb_encode(&stream, HT_Etherbuf_${messages[i]}_fields, &packTarget);
+        bool success = pb_encode(&stream, ${c_prefix}${messages[i]}_fields, &packTarget);
         success &= (stream.bytes_written != 0);
 
         if (success == false)
